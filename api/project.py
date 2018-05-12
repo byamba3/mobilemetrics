@@ -1,11 +1,11 @@
-import metapy
+
 import json
 import ssl
 import csv
 
 import urllib.request
 
-from newsapi import NewsApiClient
+#from newsapi import NewsApiClient
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 
@@ -19,22 +19,19 @@ from nltk import sent_tokenize, word_tokenize
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from nltk.tokenize import RegexpTokenizer
 
-newsapi = NewsApiClient(api_key='7ee74deac24c411eb29bb20c37f05068')
-
-
 # Returns a JSON data from a URL
 def get_json_from_url(link):
     with urllib.request.urlopen(link) as url:
         data = json.loads(url.read().decode())
         return data
 
-
 def hasNumbers(tokens):
     return any(token.isdigit() for token in tokens)
 
-def getReviewLink(query, domain):
+GOOGLE_API_KEY = 'AIzaSyCb4QF971ntpi6aZ0ga-dVCt4EyG5CAX88'
+def getArticleData(query, domain):
     query = query.lower()
-    base_url = "https://www.googleapis.com/customsearch/v1?key=AIzaSyCWn3Bw5HOxsC6wyvUkg02v4ngDCDFP7ZU&cx=014029824769110719357:t_k1dyl2rku&q="
+    base_url = f'https://www.googleapis.com/customsearch/v1?key={GOOGLE_API_KEY}&cx=014029824769110719357:t_k1dyl2rku&q='
     tokenizer = RegexpTokenizer(r'\w+')
     tokens = tokenizer.tokenize(query)
     print(tokens)
@@ -70,36 +67,6 @@ def getReviewLink(query, domain):
         else:
             return all_articles['items'][i]
     return None
-
-def getReviewLinkOld(query, domain):
-    print(query)
-    tokenizer = RegexpTokenizer(r'\w+')
-    tokens = tokenizer.tokenize(query)
-
-    convertedQuery = ""
-    for count, token in enumerate(tokens):
-        if count == 0:
-            convertedQuery = token
-        else:
-            convertedQuery = f'{convertedQuery}+{token}'
-
-    all_articles = newsapi.get_everything(q=convertedQuery,
-                                          domains=domain,
-                                          language='en',
-                                          sort_by='relevancy')
-
-    if all_articles['status'] != "ok" or all_articles['totalResults'] == 0:
-        return None
-
-    # Loops from 1 to min(8, totalresults) until it finds a satisfying article
-    for i in range(0, min(8, all_articles['totalResults'])):
-        articleTitle = all_articles['articles'][i]['title'].lower()
-        if "review" not in articleTitle or "reviews" in articleTitle or "cases" in articleTitle or "case" in articleTitle or "camera" in articleTitle:
-            continue
-        else:
-            return all_articles['articles'][i]
-    return None
-
 
 def getBodyContent(url, domain):
     # Opening up connection, grabbing page
@@ -168,20 +135,7 @@ def getBodyContent(url, domain):
     else:
         return None
 
-    # print(content)
-
     return content
-
-
-def getSentences(doc):
-
-    tok = metapy.analyzers.ICUTokenizer(suppress_tags=True)
-    tok.set_content(doc.content())
-    tokens = []
-    for token in tok:
-        tokens.append(token)
-    return tokens
-
 
 battery_words = {
     'longer': 2.0,
@@ -268,7 +222,6 @@ camera_words = {
     'DxOMark': 1.5
 }
 
-
 def getSentiment(sentences, category):
     if not sentences:
         return None
@@ -312,31 +265,37 @@ def getSentiment(sentences, category):
 
 
 def openFile(filename):
-    with open('battery-training.csv', 'r') as fp:
-        cl = NaiveBayesClassifier(fp)
+    with open(filename, 'r') as fp:             #'battery-training.csv'
+        return NaiveBayesClassifier(fp)
 
-
-def getNaiveSentiment():
-    cl = openFile('battery-training.csv')
-    prob_dist = cl.prob_classify("I wish the phone was lasting longer.")
-    testProb1 = round(prob_dist.prob("pos"), 2)
-    testProb2 = round(prob_dist.prob("neg"), 2)
-    print("Pos: {}".format(testProb1))
-    print("Neg: {}".format(testProb2))
-
-    return None
-
+def getNaiveSentiment(filename,sentence):
+    cl = openFile(filename)
+    prob_dist = cl.prob_classify(sentence)
+    return prob_dist
 
 class Article:
     def __init__(self, _url, _body):
         self.title = None
         self.url = _url
         self.body = _body
+        self.domain = None
         self.battery = None
         self.display = None
         self.performance = None
         self.camera = None
         self.overall = None
+
+    def serialize(self):
+        return {
+            'title': self.title,
+            'url': self.url,
+            'domain': self.domain,
+            'battery': self.battery,
+            'display': self.display,
+            'performance': self.performance,
+            'camera': self.camera,
+            'overall': self.overall
+        }
 
 
 domains = ["theverge.com", "phonearena.com", "slashgear.com",
@@ -344,9 +303,11 @@ domains = ["theverge.com", "phonearena.com", "slashgear.com",
 
 
 def analyze(query):
+    
     articles = dict.fromkeys(domains, None)
     for domain in domains:
-        article = getReviewLink(query, domain)
+        phoneName = query['phoneType']
+        article = getArticleData(phoneName, domain)
         articleURL = None
         title = None
         body = None
@@ -358,6 +319,7 @@ def analyze(query):
 
         newArticle = Article(articleURL, body)
         newArticle.title = title
+        newArticle.domain = domain
         print(title)
         articles[domain] = newArticle
 
@@ -453,20 +415,22 @@ def analyze(query):
         totalOverall = None
 
     if totalPerformance != None and countPerformance != 0:
-        averagePerformance = totalPerformance / countPerformance
+        averagePerformance = round(totalPerformance / countPerformance,3)
     if totalBattery != None and countBattery != 0:
-        averageBattery = totalBattery / countBattery
+        averageBattery = round(totalBattery / countBattery,3)
     if totalDisplay != None and countDisplay != 0:
-        averageDisplay = totalDisplay / countDisplay
+        averageDisplay = round(totalDisplay / countDisplay,3)
     if totalCamera != None and countCamera != 0:
-        averageCamera = totalCamera / countCamera
+        averageCamera = round(totalCamera / countCamera,3)
     if totalOverall != None and countOverall != 0:
-        averageOverall = totalOverall / countOverall
+        averageOverall = round(totalOverall / countOverall,3)
 
-    return [averagePerformance, averageBattery, averageDisplay, averageCamera, averageOverall]
+    outputArticles = []
+
+    for domain in domains:
+        outputArticles.append(articles[domain])
+    return [averagePerformance, averageBattery, averageDisplay, averageCamera, averageOverall, outputArticles]
 
 
 if __name__ == '__main__':
-    # print(sampleText)
-   # print(batterySIA.polarity_scores("All my research suggests that this phone has poor battery life."))
     print(analyze("LG G6"))

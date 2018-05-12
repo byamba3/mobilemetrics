@@ -1,5 +1,6 @@
 from flask import jsonify
 
+
 class Mixin():
 
     def to_dict(self):
@@ -16,7 +17,6 @@ def create_response(data={}, status=200, message=''):
     Modifications included:
     - make success a boolean since there's only 2 values
     - make message a single string since we will only use one message per response
-
     IMPORTANT: data must be a dictionary where:
     - the key is the name of the type of data
     - the value is the data itself
@@ -37,5 +37,3 @@ def serialize_list(items):
     if not items or items is None:
         return []
     return [x.to_dict() for x in items]
-
-

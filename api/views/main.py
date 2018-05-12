@@ -1,10 +1,9 @@
 from api import app
 from flask import Blueprint
-from api.models import Person
-from project import create_response, serialize_list
-from api.utils import create_response, serialize_list
+#from api.utils import create_response, serialize_list
 from api.project import analyze
-from flask import jsonify
+from flask import jsonify, request, Response
+from api.utils import create_response, serialize_list
 
 mod = Blueprint('main', __name__)
 
@@ -14,24 +13,15 @@ mod = Blueprint('main', __name__)
 def index():
     return '<h1>Hello World!</h1>'
 
-
-# function that is called when you visit /persons
-@app.route('/persons')
-def name():
-    try:
-        persons = Person.query.all()
-        persons_list = serialize_list(persons)   
-        return create_response(data={'persons': persons_list})
-    except Exception as ex:
-        return create_response(data={}, status=400, message=str(ex))
-
-@app.route('/analyze', methods=['GET'])
-def analyze_data(query):
+@app.route('/analyze', methods=['POST'])
+def analyze_data():
+    query = request.get_json()
     print(query)
     analyzedOutput = analyze(query)
-    return jsonify(averagePerformance = analyzedOutput[0], 
-    averageBattery = analyzedOutput[1], 
-    averageDisplay = analyzedOutput[2], 
-    averageCamera = analyzedOutput[3], 
-    averageOverall = analyzedOutput[4],
-        articles = [article.serialize() for article in analyzedOutput[5]])
+    articles = [article.serialize() for article in analyzedOutput[5]]
+    return create_response(data={'performance': analyzedOutput[0], 
+    'battery': analyzedOutput[1], 
+    'display': analyzedOutput[2], 
+    'camera': analyzedOutput[3], 
+    'overall': analyzedOutput[4],
+    'articles': articles}, status =200)

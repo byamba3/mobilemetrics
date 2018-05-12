@@ -40,7 +40,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/Users/cogitau/Byamba's Github/Mobile Metrics/venv"
+VIRTUAL_ENV="/Users/cogitau/Github/Mobile-Metrics/venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

@@ -1,10 +1,7 @@
 ## Heroku Deployment
 Heroku allows you to easily deploy your application without worrying about dependencies and how to set up your server. Once it's set up you can just push your code to Heroku and it will automatically update.<br>
-**You must have a Heroku Account and have the [Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) installed on your computer.** 
-
-First, create an application in your Heroku dashboard, click on the "Deploy" tab and find the ```git remote add ....``` and run that command in your repository.
-While you're still in your Heroku Dashboard, click add `Heroku Postgres`. This will add a Postgres Database to your app(we will connect it later).
-
+You must have a Heroku Account and have the Heroku CLI installed on your computer. First, create an application in your Heroku dashboard, click on the "Deploy" tab and find the ```git remote add ....``` and run that command in your repository. <br>
+While you're still in your Heroku Dashboard, click add "Heroku Postgres". This will add a Postgres Database to your app(we will connect it later).<br>
 Then, login into heroku in your command line:
 ```
 $ heroku login
@@ -29,13 +26,13 @@ $ heroku run bash
 ~ $ python manage.py db migrate
 ~ $ python manage.py db upgrade
 ```
-Finally, open up your live app by clicking the "Open App" button on the top-right corner of your Heroku dashboard!
 ## Heroku Postgres CLI 
 A pretty neat command to go into the heroku postgres CLI is:
 ```
 $ heroku pg:psql
 ```
-Note: You are already inside your database!
+Note: You are already inside your database! \n
+Finally, open up your live app by clicking the "Open App" button on the top-right corner of your Heroku dashboard!
 ## Version Errors when migrating database
 This happens when the alembic table SQLAlchemy uses screws up. You must remove it and migrate the database again.<br>
 Go into the Heroku postgres database
