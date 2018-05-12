@@ -1,6 +1,5 @@
 from flask import jsonify
 
-
 class Mixin():
 
     def to_dict(self):
@@ -38,3 +37,5 @@ def serialize_list(items):
     if not items or items is None:
         return []
     return [x.to_dict() for x in items]
+
+
