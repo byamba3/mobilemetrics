@@ -2,19 +2,20 @@
 An application that dynamically scrapes smartphone text reviews from popular news websites and performs a sentiment analysis on them. Then it uses the result to tell the user how good the smartphone is. 
 
 ## Requirements
+- pipenv
 - Flask
 - Node.js and npm
 - Python3
 - TextBlob
-- NLTK
+- NLTK 
 - BeautifulSoup
 
 ## Usage
 1. Clone the repository
-2. Install the necessary requirements.
-3. Run `python manage.py runserver` within the backend folder
+2. Install pipenv. Then run `pip3 install virtualenv`, `virtualenv -p python3 venv` and finally `source venv/bin/activate`
+3. Run `pip install -r requirements.txt` to get all the required files. Now just type `python manage.py runserver` to launch the server.
 4. Run `npm start` within the frontend folder 
-5. Go to `localhost:5000` on your browser.
+5. Go to `localhost:3000` on your browser.
 
 ## Functions
 * getReviewLink(query, domain) - Returns a json data of the review article. `query` is the name of the smartphone. `domain` is the review site to grab from.
@@ -29,7 +30,7 @@ An application that dynamically scrapes smartphone text reviews from popular new
 The application is built on Flask and ReactJS. It uses Flask to handle the back end and ReactJS for the front end. The file `project.py` is where all the text retrieving and processing happens. When Flask is running and connected with ReactJS through an endpoint, it will listen for a search term. Once the user performs a search on the browser, the data will be sent to Flask. Flask will input this search term into `analyze`, which will spit out an average sentiment score. Flask sends this score to ReactJS to display.
 
 ## The process:
-###Getting the reviews
+### Getting the reviews
 1) User types in a smartphone name (eg. Pixel 2 XL, Galaxy S9)
 2) Performs a query search through Google’s Search API to get appropriate URL and title. (The article’s text content itself is not provided, thus we must use web scraping tools.)
 3) Provides the URL to Beautiful Soup to scrape the text content from the appropriate websites 
