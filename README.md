@@ -2,7 +2,7 @@
 An application that dynamically scrapes smartphone text reviews from popular news websites and performs a sentiment analysis on them. Then it uses the result to tell the user how good the smartphone is. 
 
 ## Requirements
-- pipenv
+- virtualenv
 - Flask
 - Node.js and npm
 - Python3
@@ -12,7 +12,7 @@ An application that dynamically scrapes smartphone text reviews from popular new
 
 ## Usage
 1. Clone the repository
-2. Install pipenv. Then run `pip3 install virtualenv`, `virtualenv -p python3 venv` and finally `source venv/bin/activate`
+2. Set up virtual env by: `pip3 install virtualenv`, `virtualenv -p python3 venv` and finally `source venv/bin/activate`
 3. Run `pip install -r requirements.txt` to get all the required files. Now just type `python manage.py runserver` to launch the server.
 4. Run `npm start` within the frontend folder 
 5. Go to `localhost:3000` on your browser.

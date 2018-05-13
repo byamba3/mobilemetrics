@@ -129,7 +129,8 @@ class App extends Component {
               </form>
           </Row>
           <Row>
-            <h3>SENTIMENT</h3>
+            <h3>SENTIMENT </h3>
+            <small>(-1 to -0.5 is negative) (-0.5 to 0.5 is neutral) (0.5 - 1.0 is positive)</small>
           </Row>
           { this.state.showing 
                     ? <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>

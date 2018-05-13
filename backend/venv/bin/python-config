@@ -1,4 +1,4 @@
-#!/Users/cogitau/Github/Mobile-Metrics/venv/bin/python
+#!/Users/cogitau/Github/Mobile-Metrics/backend/venv/bin/python
 
 import sys
 import getopt
