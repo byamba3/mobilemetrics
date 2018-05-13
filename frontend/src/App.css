@@ -1,10 +1,45 @@
-.App {
-  text-align: center;
+/* *{
+  margin: 0;
+  padding: 0;
+} */
+Grid {
+  width: 50%;
+}
+body{
+  background-color: rgb(87,185,157);
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+.search-bar {
+  margin: 10px;
+  padding: 10px;
+  text-align: left;
+  width: 50vh;
+}
+
+.search-bar input {
+  width: 300px;
+  width: 100%;
+}
+
+input{
+  padding: 0;
+  margin: 0;
+  font-size: 4vh;
+  height:5vh;
+}
+
+::placeholder {
+  color: #9C9696;
+}  
+
+.App{
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  text-align: center;
+  display: block;
+  height: 30vh; 
+  /* margin:auto 5px; */
+  /* display: block; */
+  /* align-items: center; */
 }
 
 .App-header {

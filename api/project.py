@@ -32,7 +32,7 @@ GOOGLE_API_KEY = 'AIzaSyAZg0BlLFSYiQQGRtQa-EzUAihBo479GSA'
 def getArticleData(query, domain):
     query = query.lower()
     base_url = f'https://www.googleapis.com/customsearch/v1?key={GOOGLE_API_KEY}&cx=014029824769110719357:t_k1dyl2rku&q='
-    tokenizer = RegexpTokenizer(r'[\w+-]+')
+    tokenizer = RegexpTokenizer(r'\w+')
     tokens = tokenizer.tokenize(query)
 
     convertedQuery = ""
@@ -42,7 +42,6 @@ def getArticleData(query, domain):
         else:
             convertedQuery = f'{convertedQuery}+{token}'
 
-    print(convertedQuery)
     full_url = f'{base_url}{convertedQuery}+review+site:{domain}'
     all_articles = get_json_from_url(full_url)
     # print(all_articles)
@@ -53,7 +52,7 @@ def getArticleData(query, domain):
         return None
 
     # Loops from 1 to min(8, totalresults) until it finds a satisfying article
-    for i in range(0, min(3, totalResults)):
+    for i in range(0, min(2, totalResults)):
         articleTitle = all_articles['items'][i]['title'].lower()
         titleTokens = tokenizer.tokenize(articleTitle)
         if ("review" not in articleTitle or
@@ -147,6 +146,10 @@ battery_words = {
 }
 
 display_words = {
+    'bright': 3.0,
+    'colorful': 2.0,
+    'contrasty': 2.0,
+    'dim': -1.0,
     '1440p': 3.4,
     '1080p': -1.4,
     '720p': -3.5,
@@ -154,7 +157,8 @@ display_words = {
     'OLED': 3.5,
     'Quad': 2.0,
     'LCD': -0.5,
-    'Samsung': 3.5
+    'tint': -0.5,
+    'accurate': 1.0
 }
 
 performance_words = {
@@ -229,7 +233,6 @@ def getSentiment(sentences, category):
     if category == "battery":
         SIA.lexicon.update(battery_words)
     elif category == "display":
-        #getNaiveSentiment('display-training.csv', )
         SIA.lexicon.update(display_words)
     elif category == "performance":
         SIA.lexicon.update(performance_words)
@@ -242,29 +245,21 @@ def getSentiment(sentences, category):
         SIA.lexicon.update(performance_words)
 
     for sentence in sentences:
-        predictiveScore = TextBlob(sentence)
+        # analysis = TextBlob(sentence)
         sentimentScore = SIA.polarity_scores(sentence)["compound"]
-        combinedScore = (predictiveScore.sentiment.polarity*.6 + sentimentScore*1.4) / 2
-        if round(combinedScore, 2) != 0:
-            score += combinedScore
+        if round(sentimentScore, 2) != 0:
+            score += sentimentScore
             count += 1
     if count == 0:
         return None
 
     finalScore = score/count
-    signbit = 1 if finalScore > 0 else -1
-    #Weighting
     if category == "overall":
-        finalScore = ((finalScore*100) + signbit*0.6*(100))/(signbit*(100+0.6*(100)) )
+        finalScore = ((finalScore*100) + 0.9*(100))/(100+0.9*(100))
     elif category == "camera":
-        finalScore = ((finalScore*100) + signbit*0.6*(100))/(signbit*(100+0.6*(100)) )
+        finalScore = ((finalScore*100) + 0.8*(100))/(100+0.8*(100))
     elif category == "performance":
-        finalScore = ((finalScore*100) + signbit*0.5*(100))/(signbit*(100+0.5*(100)) )
-    elif category == "display":
-        finalScore = ((finalScore*100) + signbit*0.6*(100))/(signbit*(100+0.6*(100)) )
-    elif category == "battery":
-        finalScore = ((finalScore*100) + signbit*0.4*(100))/(signbit*(100+0.4*(100)) )
-
+        finalScore = ((finalScore*100) + 0.5*(100))/(100+0.5*(100))
     return round(finalScore, 5)
 
 
@@ -275,8 +270,6 @@ def openFile(filename):
 def getNaiveSentiment(filename,sentence):
     cl = openFile(filename)
     prob_dist = cl.prob_classify(sentence)
-    print(round(prob_dist.prob("pos"), 2))
-    print(round(prob_dist.prob("pos"), 2))
     return prob_dist
 
 class Article:
@@ -309,9 +302,7 @@ domains = ["theverge.com", "phonearena.com", "slashgear.com",
 
 
 def analyze(query):
-    if query == {} or query == None:
-        return None
-
+    
     articles = dict.fromkeys(domains, None)
     for domain in domains:
         phoneName = query['phoneType']
@@ -319,17 +310,15 @@ def analyze(query):
         articleURL = None
         title = None
         body = None
-        _domain = None
 
         if article != None:
             articleURL = article['link']
             title = article['title']
             body = getBodyContent(articleURL, domain)
-            _domain = domain
 
         newArticle = Article(articleURL, body)
         newArticle.title = title
-        newArticle.domain = _domain
+        newArticle.domain = domain
         print(title)
         articles[domain] = newArticle
 
@@ -438,11 +427,9 @@ def analyze(query):
     outputArticles = []
 
     for domain in domains:
-        if articles[domain].url != None:
-            outputArticles.append(articles[domain])
+        outputArticles.append(articles[domain])
     return [averagePerformance, averageBattery, averageDisplay, averageCamera, averageOverall, outputArticles]
 
 
 if __name__ == '__main__':
-    print(analyze("iPhone X"))
-    #print(getNaiveSentiment('display-training.csv', "This display is pretty good with AMOLED."))
+    print(analyze("LG G6"))

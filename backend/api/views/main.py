@@ -10,13 +10,21 @@ mod = Blueprint('main', __name__)
 
 # function that is called when you visit /
 @app.route('/')
-def index():
+def index(): 
     return '<h1>Hello World!</h1>'
 
 @app.route('/analyze', methods=['POST'])
 def analyze_data():
     query = request.get_json()
     print(query)
+    if query == None or query == {} or query['phoneType'] == '':
+        return create_response(data={'performance': None,
+        'battery': None,
+        'display': None,
+        'camera': None,
+        'overall': None,
+        'articles': None}, status =200)
+    
     analyzedOutput = analyze(query)
     articles = [article.serialize() for article in analyzedOutput[5]]
     return create_response(data={'performance': analyzedOutput[0], 
