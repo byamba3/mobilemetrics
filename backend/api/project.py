@@ -257,10 +257,11 @@ def getSentiment(sentences, category):
     if category == "overall":
         finalScore = ((finalScore*100) + signbit*0.6*(100))/(signbit*(100+0.6*(100)) )
     elif category == "camera":
-        finalScore = ((finalScore*100) + signbit*0.6*(100))/(signbit*(100+0.6*(100)) )
+        finalScore = ((finalScore*100) + signbit*0.5*(100))/(signbit*(100+0.5*(100)) )
     elif category == "performance":
         finalScore = ((finalScore*100) + signbit*0.5*(100))/(signbit*(100+0.5*(100)) )
     elif category == "display":
+        if
         finalScore = ((finalScore*100) + signbit*0.6*(100))/(signbit*(100+0.6*(100)) )
     elif category == "battery":
         finalScore = ((finalScore*100) + signbit*0.4*(100))/(signbit*(100+0.4*(100)) )
