@@ -1,7 +1,7 @@
 # Mobile Metrics
 An application that dynamically scrapes smartphone text reviews from popular news websites and performs a sentiment analysis on them. Then it uses the result to tell the user how good the smartphone is. 
 
-![Preview](https://ibb.co/mm6cUy)
+![Preview](https://preview.ibb.co/nByD2J/Mobile_Metrics_GIF.gif)
 
 ## Requirements
 - virtualenv
