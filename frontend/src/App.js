@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Label, InputGroup, FormGroup, ControlLabel, FormControl, HelpBlock,
-  Button, Row, Col, ListGroup, ListGroupItem, Grid , PageHeader, Badge} from 'react-bootstrap';
+  Button, Row, Col, ListGroup, ListGroupItem, Grid , PageHeader, Badge, Tooltip, OverlayTrigger} from 'react-bootstrap';
 import logo from './logo.svg';
 import axios from 'axios';
 import './App.css';
@@ -29,6 +29,12 @@ const getRating = (score) => {
   }
 }
 
+const tooltip = (
+  <Tooltip id="tooltip">
+    The average sentiment score from all articles.
+  </Tooltip>
+);
+
 const format = /[!@#$%^&*()_\-=\[\]{};':"\\|,.<>\/?]/;
 
 class App extends Component {
@@ -55,7 +61,7 @@ class App extends Component {
     var self = this;
     const { showing } = this.state;
     this.setState({ showing: !showing })
-    axios.post('http://127.0.0.1:3453/analyze',data)
+    axios.post('https://mobilemetrics-backend.herokuapp.com/analyze',data)
     .then(function (response) {
       console.log(response.data.result);
       self.setState({
@@ -97,14 +103,24 @@ class App extends Component {
     else if (!isNaN(this.state.value)) return 'You can not have only numbers.';
   }
 
+  handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.submitPhoneName()
+    }
+  }
+
   render() {
     return (
       <Grid>
         <div className="App">
           <Row>
             <PageHeader>
-              Mobile Metrics <small>SMARTPHONE SENTIMENT ANALYSIS</small>
+              <div>Mobile Metrics <small>SMARTPHONE SENTIMENT ANALYSIS</small> </div>
+            <h5>Fetches smartphone reviews and analyzes them for you using Natural Language Processing</h5>
+            <h4><a href="https://byamba.me"><small>Bryan Ulziisaikhan</small></a></h4>
             </PageHeader>
+
           </Row>
           <Row>
               <form>
@@ -118,9 +134,10 @@ class App extends Component {
                       value={this.state.value}
                       placeholder="Enter smartphone name"
                       onChange={this.handleChange}
+                      onKeyPress={(e) => this.handleKeyPress(e)}
                     />
                     <InputGroup.Button>
-                      <Button bsStyle="primary" onClick={this.submitPhoneName}>Search Ratings</Button>
+                      <Button type="button" bsStyle="primary" onClick={this.submitPhoneName}>Search Ratings</Button>
                     </InputGroup.Button>
                   </InputGroup>
                   <FormControl.Feedback />
@@ -129,8 +146,10 @@ class App extends Component {
               </form>
           </Row>
           <Row>
-            <h3>SENTIMENT </h3>
-            <small>(-1 to -0.5 is negative) (-0.5 to 0.5 is neutral) (0.5 - 1.0 is positive)</small>
+            <OverlayTrigger placement="top" overlay={tooltip}>
+              <h3>SENTIMENT </h3>
+            </OverlayTrigger>
+            <small className="muted">(-1.0 to -0.5 is negative) (-0.5 to 0.5 is neutral) (0.5 to 1.0 is positive)</small>
           </Row>
           { this.state.showing 
                     ? <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
@@ -142,6 +161,7 @@ class App extends Component {
                 <Col md={12}>
                   <ListGroup>
                     <ListGroupItem className="outputs" id ="Performance:"><b>Performance: </b>{this.state.performance} {getRating(this.state.performance)}</ListGroupItem>
+
                     <ListGroupItem className="outputs" id ="Battery:"><b>Battery: </b>{this.state.battery} {getRating(this.state.battery)}</ListGroupItem>
                     <ListGroupItem className="outputs" id ="Display:"><b>Display: </b>{this.state.display} {getRating(this.state.display)}</ListGroupItem>
                     <ListGroupItem className="outputs" id ="Camera:"><b>Camera: </b>{this.state.camera} {getRating(this.state.camera)}</ListGroupItem>

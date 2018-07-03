@@ -1,4 +1,3 @@
-
 import json
 import ssl
 import csv
@@ -12,6 +11,10 @@ from bs4 import BeautifulSoup as soup
 from textblob import TextBlob
 from textblob.classifiers import NaiveBayesClassifier
 from textblob.sentiments import NaiveBayesAnalyzer
+
+import nltk
+nltk.data.path.append('nltk_data')
+nltk.data.path.append('./nltk_data')
 
 from nltk.tokenize import TweetTokenizer, sent_tokenize
 from nltk.corpus import brown
@@ -253,6 +256,7 @@ def getSentiment(sentences, category):
 
     finalScore = score/count
     signbit = 1 if finalScore > 0 else -1
+    
     #Weighting
     if category == "overall":
         finalScore = ((finalScore*100) + signbit*0.6*(100))/(signbit*(100+0.6*(100)) )
