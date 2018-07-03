@@ -3,6 +3,8 @@ An application that dynamically scrapes smartphone text reviews from popular new
 
 ![Preview](https://media.giphy.com/media/9ViAEbsNt2KiBG0j61/giphy.gif)
 
+Link: https://mobilemetrics-front.herokuapp.com/
+
 ## Requirements
 - virtualenv
 - Flask
