@@ -1,7 +1,8 @@
 # Mobile Metrics
 An application that dynamically scrapes smartphone text reviews from popular news websites and performs a sentiment analysis on them. Then it uses the result to tell the user how good the smartphone is. 
 
-![Preview](https://media.giphy.com/media/9ViAEbsNt2KiBG0j61/giphy.gif)
+![Preview](https://pli.io/qCY8O.gif)
+![Preview2](https://pli.io/qCfYn.gif)
 
 Link: https://mobilemetrics-front.herokuapp.com/
 
